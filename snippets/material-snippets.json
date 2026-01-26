@@ -1,0 +1,136 @@
+{
+  "Block Template": {
+    "prefix": "block",
+    "body": [
+      "($1) {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Create a new block"
+  },
+  "Texture Parameter": {
+    "prefix": "texture",
+    "body": "texture[${1:0}]\t${2|UserTexture,DepthTexture,RenderTarget,File|}[${3:0}]",
+    "description": "Add indexed texture parameter"
+  },
+  "Domain": {
+    "prefix": "domain",
+    "body": "domain\t\t\t${1|globalWater,terrain,sky,surface, particles|}",
+    "description": "Set domain"
+  },
+  "Cull Mode": {
+    "prefix": "cullMode",
+    "body": "cullMode\t\t${1|none,front,back|}",
+    "description": "Set cull mode"
+  },
+  "Depth Test Enabled": {
+    "prefix": "zEnable",
+    "body": "zEnable\t\t\t${1|true,false|}",
+    "description": "Set Depth Test Enabled"
+  },
+  "Depth Write Mode": {
+    "prefix": "zWriteEnable",
+    "body": "zWriteEnable\t${1|true,false|}",
+    "description": "Set Depth Write Mode"
+  },
+  "Depth Func": {
+    "prefix": "depthFunc",
+    "body": "depthFunc\t\t\t${1|never,less,equal,lessEqual,greater,notEqual,greaterEqual,always|}",
+    "description": "Set Depth Test Enabled"
+  },
+  "Depth Clip Enable": {
+    "prefix": "depthClipEnable",
+    "body": "depthClipEnable\t${1|true,false|}",
+    "description": "Set Depth Clip Enable"
+  },
+  "Depth Bias": {
+    "prefix": "depthBias",
+    "body": "depthBias\t\t${2:0}",
+    "description": "Set Depth Bias"
+  },
+  "Depth Bias Clamp": {
+    "prefix": "depthBiasClamp",
+    "body": "depthBiasClamp\t${2:0}",
+    "description": "Set Depth Bias"
+  },
+  "Slope Scale Depth Bias": {
+    "prefix": "slopeScaleDepthBias",
+    "body": "slopeScaleDepthBias\t${2:0}",
+    "description": "Set Slope Scale Depth Bias"
+  },
+  "Scissor Enable": {
+    "prefix": "scissorEnable",
+    "body": "scissorEnable\t${1|true,false|}",
+    "description": "Set Scissor Enable"
+  },
+  "Filter": {
+    "prefix": "filter",
+    "body": "filter[${1:0}]\t\t${2|point,linear,anisotropic|}",
+    "description": "Set texture filter"
+  },
+  "AddressUV": {
+    "prefix": "addressUV",
+    "body": "addressUV[${1:0}]\t${2|wrap,mirror,clamp,border,mirrorOnce|}",
+    "description": "Set texture address mode"
+  },
+  "Max Anisotropy": {
+    "prefix": "maxAnisotropy",
+    "body": "maxAnisotropy[${1:0}]\t${2|1,2,4,8,16|}",
+    "description": "Set max anisotropy level"
+  },
+  "Max LOD": {
+    "prefix": "maxLOD",
+    "body": "maxLOD[${1:0}]\t\t\t${2|0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0,13.0,14.0,15.0,16.0|}",
+    "description": "Set max LOD level"
+  },
+  "Min LOD": {
+    "prefix": "minLOD",
+    "body": "minLOD[${1:0}]\t\t${2|0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0,13.0,14.0,15.0,16.0|}",
+    "description": "Set Min LOD level"
+  },
+  "Mip LOD Bias": {
+    "prefix": "mipLODBias",
+    "body": "mipLODBias[${1:0}]\t\t${2|-4,-3,-2,-1,0,1,2,3,4|}",
+    "description": "Set Mip LOD Bias"
+  },
+  "Blend Function": {
+    "prefix": "blendFunc",
+    "body": "blendFunc\t\t${1|srcAlpha,invSrcAlpha,zero,one,srcColor,invSrcColor,destAlpha,invDestAlpha,destColor,invDestColor,srcAlphaSat,blendFactor,invBlendFactor|}\t${2|invSrcAlpha,srcAlpha,zero,one,srcColor,invSrcColor,destAlpha,invDestAlpha,destColor,invDestColor,srcAlphaSat,blendFactor,invBlendFactor|}",
+    "description": "Set Blend function"
+  },
+  "Blend Op": {
+    "prefix": "blendOp",
+    "body": "blendOp\t\t\t${1|add,subtract,revSubtract,min,max|}",
+    "description": "Set Blend operation"
+  },
+  "Stencil Op": {
+    "prefix": "stencilOp",
+    "body": "stencilOp\t\t${1|keep,zero,replace,incrSat,decrSat,invert,incr,decr|}",
+    "description": "Set Stencil operation"
+  },
+  "Stencil Func": {
+    "prefix": "stencilFunc",
+    "body": "stencilFunc\t\t${1|less,lessEqual,equal,greaterEqual,greater,notEqual,always,never|}",
+    "description": "Set Stencil function"
+  },
+  "Fill Mode": {
+    "prefix": "fillMode",
+    "body": "fillMode\t\t\t${1|solid,point|}",
+    "description": "Set Fill Mode"
+  },
+  "Antialiasing Line": {
+    "prefix": "antialiasedLineEnable",
+    "body": "antialiasedLineEnable\t${1|true,false|}",
+    "description": "Set Antialiasing Line"
+  },
+  "Shader": {
+    "prefix": "shader",
+    "body": "${1|vertexShader,pixelShader,hullShader,domainShader,computeShader|}\t\t${2:main}\t${3:./Shaders/${1/(vertexShader|pixelShader|hullShader|domainShader|computeShader)/${1:/camelcase}/}.hlsl}",
+    "description": "Add shader with type selection"
+  },
+  "Annotation": {
+    "prefix": "desc",
+    "body": "Description<${1:Description}>",
+    "description": "Add description annotation"
+  }
+}

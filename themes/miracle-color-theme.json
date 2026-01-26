@@ -1,0 +1,82 @@
+{
+  "name": "MyFormat HLSL Style",
+  "type": "dark",
+  "colors": {},
+  "tokenColors": [
+
+    {
+      "scope": "entity.name.block.myformat",
+      "settings": { "foreground": "#4EC9B0", "fontStyle": "bold" }
+    },
+
+    {
+      "scope": [
+        "punctuation.definition.bracket.round.myformat",
+        "punctuation.definition.bracket.curly.myformat"
+      ],
+      "settings": { "foreground": "#D4D4D4" }
+    },
+
+    {
+      "scope": "keyword.other.myformat",
+      "settings": { "foreground": "#569CD6" }
+    },
+
+    {
+      "scope": "support.function.shader.myformat",
+      "settings": { "foreground": "#DCDCAA" }
+    },
+
+    {
+      "scope": "constant.language.state.myformat",
+      "settings": { "foreground": "#4EC9B0" }
+    },
+
+    {
+      "scope": "variable.other.parameter.myformat",
+      "settings": { "foreground": "#9CDCFE" }
+    },
+
+    {
+      "scope": "constant.other.value.myformat",
+      "settings": { "foreground": "#CE9178" }
+    },
+
+    {
+      "scope": "entity.name.annotation.myformat",
+      "settings": { "foreground": "#C586C0", "fontStyle": "bold" }
+    },
+    {
+      "scope": "constant.other.annotation-value.myformat",
+      "settings": { "foreground": "#9CDCFE" }
+    },
+
+    {
+      "scope": "comment.line.double-slash.myformat",
+      "settings": { "foreground": "#6A9955", "fontStyle": "italic" }
+    },
+
+    {
+      "scope": "string.unquoted.filepath.myformat",
+      "settings": { "foreground": "#e01b5d" }
+    },
+
+    {
+      "scope": "string.quoted.path.myformat",
+      "settings": { "foreground": "#e01b5d" }
+    },
+
+    {
+      "scope": "string.quoted.double.myformat",
+      "settings": { "foreground": "#e06d1b" }
+    },
+        {
+      "scope": "constant.numeric.float.myformat",
+      "settings": { "foreground": "#B5CEA8" }
+    },
+    {
+      "scope": "constant.numeric.integer.myformat",
+      "settings": { "foreground": "#B5CEA8" }
+    }
+  ]
+}

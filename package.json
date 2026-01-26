@@ -1,0 +1,40 @@
+{
+  "name": "myformat-syntax",
+  "main": "./extension.js",
+  "activationEvents": ["onLanguage:template"],
+  "displayName": "Miracle Engine Material Syntax",
+  "description": "Syntax highlighting for Miracle Material / template files",
+  "version": "1.0.1",
+  "publisher": "MiracleEngine",
+   "icon": "media/icon.png",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "miracle",
+        "aliases": ["MiracleMaterial"],
+        "extensions": [".mat", ".template"],
+        "firstLine": "^// Miracle Engine Material File",
+        "configuration": "./language-configuration.json"
+      }
+    ],
+
+    "snippets": [{
+      "language": "miracle",
+      "path": "./snippets/material-snippets.json"
+    }],
+
+    "grammars": [
+      {
+        "language": "miracle",
+        "scopeName": "source.myformat",
+        "path": "./syntaxes/myformat.tmLanguage.json"
+      }
+    ]
+  }
+}
