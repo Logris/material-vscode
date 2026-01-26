@@ -11,9 +11,20 @@
   "repository": {
     "comments": {
       "patterns": [
-        {
-          "name": "comment.line.double-slash",
-          "match": "//.*$"
+        { 
+          "name": "comment.line.double-slash", 
+          "match": "//.*$" 
+        },
+        { 
+          "name": "comment.block.myformat",
+          "begin": "/\\*",
+          "end": "\\*/",
+          "patterns": [
+            {
+              "name": "comment.block.myformat",
+              "match": "."
+            }
+          ]
         }
       ]
     },

@@ -1,12 +1,16 @@
 {
-  "name": "myformat-syntax",
+  "name": "miracle-syntax",
   "main": "./extension.js",
   "activationEvents": ["onLanguage:template"],
   "displayName": "Miracle Engine Material Syntax",
   "description": "Syntax highlighting for Miracle Material / template files",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "publisher": "MiracleEngine",
-   "icon": "media/icon.png",
+    "repository": {
+    "type": "git",
+    "url": "https://github.com/Logris/material-vscode.git"
+  },
+  "icon": "media/icon.png",
   "engines": {
     "vscode": "^1.80.0"
   },
