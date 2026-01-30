@@ -1,12 +1,14 @@
 {
   "name": "miracle-syntax",
   "main": "./extension.js",
-  "activationEvents": ["onLanguage:template"],
+  "activationEvents": [
+    "onLanguage:template"
+  ],
   "displayName": "Miracle Engine Material Syntax",
   "description": "Syntax highlighting for Miracle Material / template files",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "publisher": "MiracleEngine",
-    "repository": {
+  "repository": {
     "type": "git",
     "url": "https://github.com/Logris/material-vscode.git"
   },
@@ -21,23 +23,32 @@
     "languages": [
       {
         "id": "miracle",
-        "aliases": ["MiracleMaterial"],
-        "extensions": [".mat", ".template"],
+        "aliases": [
+          "MiracleMaterial"
+        ],
+        "extensions": [
+          ".mat",
+          ".template"
+        ],
         "firstLine": "^// Miracle Engine Material File",
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./media/icon.png",
+          "dark": "./media/icon.png"
+        }
       }
     ],
-
-    "snippets": [{
-      "language": "miracle",
-      "path": "./snippets/material-snippets.json"
-    }],
-
+    "snippets": [
+      {
+        "language": "miracle",
+        "path": "./snippets/material-snippets.json"
+      }
+    ],
     "grammars": [
       {
         "language": "miracle",
-        "scopeName": "source.myformat",
-        "path": "./syntaxes/myformat.tmLanguage.json"
+        "scopeName": "source.miracle",
+        "path": "./syntaxes/material-language.json"
       }
     ]
   }

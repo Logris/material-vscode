@@ -1,0 +1,329 @@
+{
+  "scopeName": "source.miracle",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#blocks"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash emphasis",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block.miracle",
+          "begin": "/\\*",
+          "end": "\\*/",
+          "patterns": [
+            {
+              "name": "comment.block.miracle",
+              "match": "."
+            }
+          ]
+        }
+      ]
+    },
+    "blocks": {
+      "patterns": [
+        {
+          "name": "meta.block.miracle",
+          "begin": "(\\()([^\\)]+)(\\))",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.section.block.begin"
+            },
+            "2": {
+              "name": "entity.name.type.class"
+            },
+            "3": {
+              "name": "punctuation.section.block.end"
+            }
+          },
+          "end": "\\}",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.block.end"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#comments"
+            },
+            {
+              "include": "#complexAnnotations"
+            },
+            {
+              "include": "#parameterLine"
+            },
+            {
+              "include": "#blocks"
+            }
+          ]
+        }
+      ]
+    },
+    "parameterLine": {
+      "patterns": [
+        {
+          "name": "meta.parameter.miracle",
+          "begin": "^\\s*([A-Za-z_][A-Za-z0-9_\\[\\]]*)\\s+",
+          "beginCaptures": {
+            "1": {
+              "patterns": [
+                {
+                  "match": "\\b(domain|cullMode|blendFunc|blendOp|depthFunc|depthClipEnable|depthBias|depthBiasClamp|slopeScaleDepthBias|scissorEnable|stencilOp|stencilFunc|fillMode)\\b",
+                  "name": "keyword"
+                },
+                {
+                  "match": "\\b(texture|filter|addressUV|define|antialiasedLineEnable|maxAnisotropy|mipLODBias|maxLOD|title|zEnable|zWriteEnable|mipLODBias)\\b",
+                  "name": "keyword"
+                },
+                {
+                  "match": "\\b(vertexShader|pixelShader|hullShader|domainShader|computeShader)\\b",
+                  "name": "support.function"
+                },
+                {
+                  "match": ".*",
+                  "name": "variable.parameter"
+                }
+              ]
+            }
+          },
+          "end": "(?=//|$|\\s*\\})",
+          "patterns": [
+            {
+              "include": "#parameterValue"
+            }
+          ]
+        }
+      ]
+    },
+    "parameterValue": {
+      "patterns": [
+        {
+          "include": "#annotations"
+        },
+        {
+          "include": "#complexAnnotations"
+        },
+        {
+          "comment": "файл в кавычках",
+          "match": "\"(?:[a-zA-Z]:)?(?:[^\"\\\\]|\\\\.)*\\.\\w+\"",
+          "name": "meta.preprocessor.numeric"
+        },
+        {
+          "match": "\"[^\"]*\"",
+          "name": "string.quoted.double"
+        },
+        {
+          "comment": "путь файла начинается с /",
+          "match": "(?:[a-zA-Z]:)?(?:[\\\\/])?(?:[\\w\\-\\.]+[\\\\/])*[\\w\\-\\.]+\\.[a-zA-Z0-9]+(?=\\s|$)",
+          "name": "meta.preprocessor.numeric"
+        },
+        {
+          "comment": "путь файла - filename.ext",
+          "match": "[\\w\\-\\.]+\\.[a-zA-Z0-9]+(?=\\s|$)",
+          "name": "meta.preprocessor.numeric"
+        },
+        {
+          "comment": "Windows путь без расширения или с расширением",
+          "match": "(?:[a-zA-Z]:)?(?:[\\\\/][\\w\\-\\.]+)+(?=\\s|$)",
+          "name": "meta.preprocessor.numeric"
+        },
+        {
+          "comment": "Unix путь без расширения или с расширением",
+          "match": "(?:/[\\w\\-\\.]+)+(?=\\s|$)",
+          "name": "meta.preprocessor.numeric"
+        },
+        {
+          "match": "\\b(globalWater|localWater|terrain|sky|surface|particles)\\b",
+          "name": "keyword.other"
+        },
+        {
+          "match": "\\b(DepthTexture|RenderTarget|UserTexture)\\b",
+          "name": "support.type"
+        },
+        {
+          "match": "\\b(true|false|back|front|none|clamp|wrap|mirror|border|mirrorOnce|point|linear|anisotropic|DepthTexture|RenderTarget|UserTexture)\\b",
+          "name": "keyword.control"
+        },
+        {
+          "match": "\\b(srcAlpha|invSrcAlpha|zero|one|srcColor|invSrcColor|destAlpha|invDestAlpha|destColor|invDestColor|srcAlphaSat|blendFactor|invBlendFactor)\\b",
+          "name": "keyword.control"
+        },
+        {
+          "match": "\\b(never|less|equal|lessEqual|greater|notEqual|greaterEqual|always|add|subtract|revSubtract|min|max|solid|wireframe|keep|zero|replace|incrSat|decrSat|invert|incr|decr)\\b",
+          "name": "keyword.control"
+        },
+        {
+          "match": "-?\\d+\\.\\d+",
+          "name": "constant.numeric.float"
+        },
+        {
+          "match": "-?\\d+",
+          "name": "constant.numeric.integer"
+        },
+        {
+          "match": "\\S+",
+          "name": "variable.other"
+        },
+        {
+          "include": "#comments"
+        }
+      ]
+    },
+    "annotations": {
+      "patterns": [
+        {
+          "name": "meta.annotation.miracle",
+          "begin": "([A-Za-z_][A-Za-z0-9_]*)<",
+          "beginCaptures": {
+            "1": {
+              "name": "storage.type emphasis"
+            }
+          },
+          "end": ">",
+          "patterns": [
+            {
+              "name": "string emphasis",
+              "match": "[^>]+"
+            }
+          ]
+        }
+      ]
+    },
+    "complexAnnotations": {
+      "patterns": [
+        {
+          "name": "meta.annotation.complex.miracle emphasis",
+          "begin": "<",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.annotation.begin"
+            }
+          },
+          "end": ">",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.annotation.end"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#complexAnnotationContent"
+            },
+            {
+              "include": "#comments"
+            }
+          ]
+        }
+      ]
+    },
+    "complexAnnotationContent": {
+      "patterns": [
+        {
+          "name": "meta.annotation.attribute.miracle",
+          "begin": "\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*(=)?",
+          "beginCaptures": {
+            "1": {
+              "name": "entity.name.tag"
+            },
+            "2": {
+              "name": "keyword.operator.assignment"
+            }
+          },
+          "end": "(?=,|>)",
+          "patterns": [
+            {
+              "include": "#complexAnnotationValue"
+            }
+          ]
+        },
+        {
+          "name": "punctuation.separator.comma",
+          "match": ",",
+          "comment": "Разделитель атрибутов"
+        }
+      ]
+    },
+    "complexAnnotationValue": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.annotation",
+          "begin": "\"",
+          "end": "\"",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.end"
+            }
+          },
+          "patterns": [
+            {
+              "match": "\\.",
+              "name": "punctuation.separator"
+            },
+            {
+              "match": "\\s+",
+              "name": "constant.character.whitespace"
+            }
+          ]
+        },
+        {
+          "name": "meta.group.parenthesis.annotation",
+          "begin": "\\(",
+          "end": "\\)",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.group.begin"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.group.end"
+            }
+          },
+          "patterns": [
+            {
+              "match": "\\d+",
+              "name": "constant.numeric.integer"
+            },
+            {
+              "match": "\\d+\\.\\d+",
+              "name": "constant.numeric.float"
+            },
+            {
+              "match": "\\s+",
+              "name": "constant.character.whitespace"
+            }
+          ]
+        },
+        {
+          "match": "\\b(true|false)\\b",
+          "name": "constant.language.boolean"
+        },
+        {
+          "match": "\\b\\d+\\b",
+          "name": "constant.numeric.integer"
+        },
+        {
+          "match": "\\b\\d+\\.\\d+\\b",
+          "name": "constant.numeric.float"
+        },
+        {
+          "match": "[A-Za-z_][A-Za-z0-9_]*",
+          "name": "variable.parameter.annotation"
+        }
+      ]
+    }
+  }
+}
