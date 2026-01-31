@@ -128,9 +128,29 @@
     "body": "${1|vertexShader,pixelShader,hullShader,domainShader,computeShader|}\t\t${2:main}\t${3:./Shaders/${1/(vertexShader|pixelShader|hullShader|domainShader|computeShader)/${1:/camelcase}/}.hlsl}",
     "description": "Add shader with type selection"
   },
-  "Annotation": {
+  "Annotation.Desc": {
     "prefix": "desc",
     "body": "Description<${1:Description}>",
     "description": "Add description annotation"
+  },
+  "Annotation.Range": {
+    "prefix": "range",
+    "body": "Range<${1:min} ${2:max} ${3:step}>",
+    "description": "Add Range annotation"
+  },
+  "Annotation.Tooltip": {
+    "prefix": "tooltip",
+    "body": "Tooltip<${1:tooltip}>",
+    "description": "Add Tooltip annotation"
+  },
+  "Annotation.Title": {
+    "prefix": "title",
+    "body": "Title<${1:title}>",
+    "description": "Add Title annotation"
+  },
+    "Annotation.Widget": {
+    "prefix": "widget",
+    "body": "widget<${1|Slider,ComboBox,Color,EditBox|}>",
+    "description": "Add  Widget annotation"
   }
 }

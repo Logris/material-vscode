@@ -5,7 +5,7 @@
       "include": "#comments"
     },
     {
-      "include": "#blocks"
+      "include": "#allContent"
     }
   ],
   "repository": {
@@ -25,6 +25,30 @@
               "match": "."
             }
           ]
+        }
+      ]
+    },
+    "allContent": {
+      "patterns": [
+        {
+          "include": "#emptyLine"
+        },
+        {
+          "include": "#parameterLine"
+        },
+        {
+          "include": "#blocks"
+        },
+        {
+          "include": "#standaloneAnnotations"
+        }
+      ]
+    },
+    "emptyLine": {
+      "patterns": [
+        {
+          "match": "^\\s*$",
+          "name": "text.plain"
         }
       ]
     },
@@ -52,16 +76,7 @@
           },
           "patterns": [
             {
-              "include": "#comments"
-            },
-            {
-              "include": "#complexAnnotations"
-            },
-            {
-              "include": "#parameterLine"
-            },
-            {
-              "include": "#blocks"
+              "include": "#allContent"
             }
           ]
         }
@@ -70,6 +85,29 @@
     "parameterLine": {
       "patterns": [
         {
+          "comment": "ПРАВИЛО ДЛЯ ИМЕНИ ПАРАМЕТРОВ В КАВЫЧКАХ",
+          "name": "meta.parameter.miracle.quoted",
+          "begin": "^\\s*(\")([^\"]*)(\")?\\s+",
+          "beginCaptures": {
+            "1": {
+              "name": "variable.parameter"
+            },
+            "2": {
+              "name": "variable.parameter"
+            },
+            "3": {
+              "name": "variable.parameter"
+            }
+          },
+          "end": "(?=\\s*//|\\s*$|\\s*\\})",
+          "patterns": [
+            {
+              "include": "#parameterValue"
+            }
+          ]
+        },
+        {
+          "comment": " ПРАВИЛО ДЛЯ ЗНАЧЕНИЙ ПАРАМЕТРОВ",
           "name": "meta.parameter.miracle",
           "begin": "^\\s*([A-Za-z_][A-Za-z0-9_\\[\\]]*)\\s+",
           "beginCaptures": {
@@ -94,12 +132,15 @@
               ]
             }
           },
-          "end": "(?=//|$|\\s*\\})",
+          "end": "(?=\\s*//|\\s*$|\\s*\\})",
           "patterns": [
             {
               "include": "#parameterValue"
             }
           ]
+        },
+        {
+          "include": "#comments"
         }
       ]
     },
@@ -112,33 +153,45 @@
           "include": "#complexAnnotations"
         },
         {
+          "comment": "путь файла - filename.ext",
+          "match": "[\\w\\-\\.]+\\.[a-zA-Z0-9]+(?=\\s|$|,)",
+          "name": "meta.preprocessor.numeric"
+        },
+        {
+          "comment": "Unix/Mac путь",
+          "match": "/(?:[\\w\\-\\.]+/)*[\\w\\-\\.]+\\.\\w{2,4}(?=\\s|$|,)",
+          "name": "meta.preprocessor.numeric"
+        },
+        {
+          "comment": "Windows путь",
+          "match": "[a-zA-Z]:[\\\\/](?:[\\w\\-\\.]+[\\\\/])*[\\w\\-\\.]+\\.\\w{2,4}(?=\\s|$|,)",
+          "name": "meta.preprocessor.numeric"
+        },
+        {
+          "comment": "относительный путь типа Core/Textures/image.png",
+          "match": "(?:[\\w\\-\\.]+[\\\\/])+[\\w\\-\\.]+\\.\\w{2,4}(?=\\s|$|,)",
+          "name": "meta.preprocessor.numeric"
+        },
+        {
           "comment": "файл в кавычках",
           "match": "\"(?:[a-zA-Z]:)?(?:[^\"\\\\]|\\\\.)*\\.\\w+\"",
           "name": "meta.preprocessor.numeric"
         },
         {
-          "match": "\"[^\"]*\"",
-          "name": "string.quoted.double"
-        },
-        {
-          "comment": "путь файла начинается с /",
-          "match": "(?:[a-zA-Z]:)?(?:[\\\\/])?(?:[\\w\\-\\.]+[\\\\/])*[\\w\\-\\.]+\\.[a-zA-Z0-9]+(?=\\s|$)",
-          "name": "meta.preprocessor.numeric"
-        },
-        {
-          "comment": "путь файла - filename.ext",
-          "match": "[\\w\\-\\.]+\\.[a-zA-Z0-9]+(?=\\s|$)",
-          "name": "meta.preprocessor.numeric"
-        },
-        {
-          "comment": "Windows путь без расширения или с расширением",
-          "match": "(?:[a-zA-Z]:)?(?:[\\\\/][\\w\\-\\.]+)+(?=\\s|$)",
-          "name": "meta.preprocessor.numeric"
-        },
-        {
-          "comment": "Unix путь без расширения или с расширением",
-          "match": "(?:/[\\w\\-\\.]+)+(?=\\s|$)",
-          "name": "meta.preprocessor.numeric"
+          "comment": "Правило для значений параметров в кавычках",
+          "name": "constant.character.escape",
+          "begin": "\"",
+          "end": "(?:\"|(?=$))",
+          "patterns": [
+            {
+              "match": "\\\\.",
+              "name": "constant.character.escape"
+            },
+            {
+              "match": "[^\"]+",
+              "name": "constant.character.escape"
+            }
+          ]
         },
         {
           "match": "\\b(globalWater|localWater|terrain|sky|surface|particles)\\b",
@@ -169,8 +222,13 @@
           "name": "constant.numeric.integer"
         },
         {
-          "match": "\\S+",
-          "name": "variable.other"
+          "match": "[A-Za-z_][A-Za-z0-9_]*",
+          "name": "constant.character.escape"
+        },
+        {
+          "name": "punctuation.separator.comma",
+          "match": ",",
+          "comment": "Разделитель значений"
         },
         {
           "include": "#comments"
@@ -180,17 +238,17 @@
     "annotations": {
       "patterns": [
         {
-          "name": "meta.annotation.miracle",
+          "name": "meta.annotation.miracle emphasis",
           "begin": "([A-Za-z_][A-Za-z0-9_]*)<",
           "beginCaptures": {
             "1": {
-              "name": "storage.type emphasis"
+              "name": "storage.type"
             }
           },
           "end": ">",
           "patterns": [
             {
-              "name": "string emphasis",
+              "name": "string",
               "match": "[^>]+"
             }
           ]
@@ -256,7 +314,7 @@
         {
           "name": "string.quoted.double.annotation",
           "begin": "\"",
-          "end": "\"",
+          "end": "(?:\"|(?=$))",
           "beginCaptures": {
             "0": {
               "name": "punctuation.definition.string.begin"
@@ -269,12 +327,12 @@
           },
           "patterns": [
             {
-              "match": "\\.",
-              "name": "punctuation.separator"
+              "match": "\\\\.",
+              "name": "constant.character.escape"
             },
             {
-              "match": "\\s+",
-              "name": "constant.character.whitespace"
+              "match": "[^\"]+",
+              "name": "string.quoted.double.annotation"
             }
           ]
         },
@@ -294,16 +352,11 @@
           },
           "patterns": [
             {
-              "match": "\\d+",
-              "name": "constant.numeric.integer"
+              "include": "#complexAnnotationValue"
             },
             {
-              "match": "\\d+\\.\\d+",
-              "name": "constant.numeric.float"
-            },
-            {
-              "match": "\\s+",
-              "name": "constant.character.whitespace"
+              "match": ",",
+              "name": "punctuation.separator.comma"
             }
           ]
         },
@@ -322,6 +375,16 @@
         {
           "match": "[A-Za-z_][A-Za-z0-9_]*",
           "name": "variable.parameter.annotation"
+        }
+      ]
+    },
+    "standaloneAnnotations": {
+      "patterns": [
+        {
+          "include": "#complexAnnotations"
+        },
+        {
+          "include": "#annotations"
         }
       ]
     }

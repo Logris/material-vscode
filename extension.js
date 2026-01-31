@@ -27,6 +27,11 @@ const PARAMETER_VALUES = {
     'texture': ['UserTexture', 'DepthTexture', 'RenderTarget']
 };
 
+const ANNOTATION_VALUES = {
+        'widget': ['Slider', 'Color', 'ComboBox', 'EditBox'],
+        'type' : ['Cubemap', "Array"]
+};
+
 // Определяет параметр в начале строки
 function getLineStartParameter(lineText) {
     const match = lineText.match(/^\s*(\w+)(?:\[\d+\])?/);
