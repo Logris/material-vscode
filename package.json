@@ -6,7 +6,7 @@
   ],
   "displayName": "Miracle Engine Material Syntax",
   "description": "Syntax highlighting for Miracle Material / template files",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "publisher": "MiracleEngine",
   "repository": {
     "type": "git",
@@ -28,7 +28,8 @@
         ],
         "extensions": [
           ".mat",
-          ".template"
+          ".template",
+          ".fx"
         ],
         "firstLine": "^// Miracle Engine Material File",
         "configuration": "./language-configuration.json",

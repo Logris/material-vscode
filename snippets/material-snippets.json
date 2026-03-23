@@ -10,12 +10,12 @@
   },
   "Texture Parameter": {
     "prefix": "texture",
-    "body": "texture[${1:0}]\t${2|UserTexture,DepthTexture,RenderTarget,File|}[${3:0}]",
+    "body": "texture[${1:0}]\t${2|UserTexture,DepthTexture,RenderTarget,UAVTexture,File|}[${3:0}]",
     "description": "Add indexed texture parameter"
   },
   "Domain": {
     "prefix": "domain",
-    "body": "domain\t\t\t${1|globalWater,terrain,sky,surface, particles|}",
+    "body": "domain\t\t\t${1|globalWater,terrain,sky,surface, particles, postprocess|}",
     "description": "Set domain"
   },
   "Cull Mode": {
@@ -73,6 +73,11 @@
     "body": "addressUV[${1:0}]\t${2|wrap,mirror,clamp,border,mirrorOnce|}",
     "description": "Set texture address mode"
   },
+  "Border Color": {
+    "prefix": "borderColor",
+    "body": "borderColor[${1:0}]\t${2: 1 1 1 1}",
+    "description": "Set Blend operation"
+  },
   "Max Anisotropy": {
     "prefix": "maxAnisotropy",
     "body": "maxAnisotropy[${1:0}]\t${2|1,2,4,8,16|}",
@@ -92,6 +97,11 @@
     "prefix": "mipLODBias",
     "body": "mipLODBias[${1:0}]\t\t${2|-4,-3,-2,-1,0,1,2,3,4|}",
     "description": "Set Mip LOD Bias"
+  },
+  "Write Mask (0=none, 1=R, 3=RG, 7=RGB, 15=RGBA)": {
+    "prefix": "colorWriteMask",
+    "body": "colorWriteMask\t\t${1|0,1,3,7,15|}",
+    "description": "Set Color Write Mask (0=none, 1=R, 3=RG, 7=RGB, 15=RGBA)"
   },
   "Blend Function": {
     "prefix": "blendFunc",
@@ -125,7 +135,7 @@
   },
   "Shader": {
     "prefix": "shader",
-    "body": "${1|vertexShader,pixelShader,hullShader,domainShader,computeShader|}\t\t${2:main}\t${3:./Shaders/${1/(vertexShader|pixelShader|hullShader|domainShader|computeShader)/${1:/camelcase}/}.hlsl}",
+    "body": "${1|vertexShader,pixelShader,geometryShader,hullShader,domainShader,computeShader|}\t\t${2:main}\t${3:./Shaders/${1/(vertexShader|pixelShader|geometryShader|hullShader|domainShader|computeShader)/${1:/camelcase}/}.hlsl}",
     "description": "Add shader with type selection"
   },
   "Annotation.Desc": {
@@ -148,7 +158,7 @@
     "body": "Title<${1:title}>",
     "description": "Add Title annotation"
   },
-    "Annotation.Widget": {
+  "Annotation.Widget": {
     "prefix": "widget",
     "body": "widget<${1|Slider,ComboBox,Color,EditBox|}>",
     "description": "Add  Widget annotation"

@@ -24,7 +24,8 @@ const PARAMETER_VALUES = {
     'stencilFunc': ['less', 'lessEqual', 'equal', 'greaterEqual', 'greater', 'notEqual', 'always', 'never'],
     'fillMode': ['solid', 'wireframe'],
     'addressUV': ['clamp', 'wrap', 'mirror', 'border', 'mirrorOnce'],
-    'texture': ['UserTexture', 'DepthTexture', 'RenderTarget']
+    'texture': ['UserTexture', 'DepthTexture', 'RenderTarget'],
+    'colorWriteMask': ['0', '1', '3', '7', '15']
 };
 
 const ANNOTATION_VALUES = {
@@ -92,14 +93,14 @@ function extractTextureIndex(lineText, range) {
 }
 
 const completionProvider = vscode.languages.registerCompletionItemProvider(
-    [{ language: 'myformat' }, { pattern: '**/*.template' }, { pattern: '**/*.mat' }],
+    [{ language: 'miracle' }, { pattern: '**/*.template' }, { pattern: '**/*.mat' }, { pattern: '**/*.fx' }],
     {
         provideCompletionItems(document, position) {
             const line = document.lineAt(position.line);
             const lineText = line.text;
             const cursorPos = position.character;
             
-            console.log(`[MyFormat] Line: "${lineText}" | Cursor: ${cursorPos}`);
+            console.log(`[Miracle] Line: "${lineText}" | Cursor: ${cursorPos}`);
             
             // Определяем параметр
             let currentParam = getLineStartParameter(lineText);
@@ -107,7 +108,7 @@ const completionProvider = vscode.languages.registerCompletionItemProvider(
                 currentParam = findNearestParameter(lineText, cursorPos);
             }
             
-            console.log(`[MyFormat] Parameter: "${currentParam}"`);
+            console.log(`[Miracle] Parameter: "${currentParam}"`);
             
             const completions = [];
             
@@ -117,13 +118,13 @@ const completionProvider = vscode.languages.registerCompletionItemProvider(
                 const valueRange = getCurrentValueRange(document, position, isTexture);
                 const currentValue = document.getText(valueRange);
                 
-                console.log(`[MyFormat] Value range: ${valueRange.start.character}-${valueRange.end.character}, value: "${currentValue}"`);
+                console.log(`[Miracle] Value range: ${valueRange.start.character}-${valueRange.end.character}, value: "${currentValue}"`);
                 
                 // Для текстур: извлекаем индекс из текущего значения
                 let textureIndex = null;
                 if (isTexture) {
                     textureIndex = extractTextureIndex(lineText, valueRange);
-                    console.log(`[MyFormat] Texture index: ${textureIndex}`);
+                    console.log(`[Miracle] Texture index: ${textureIndex}`);
                 }
                 
                 const typedValue = currentValue.toLowerCase().replace(/\[\d+\]/, '');

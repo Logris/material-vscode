@@ -114,15 +114,15 @@
             "1": {
               "patterns": [
                 {
-                  "match": "\\b(domain|cullMode|blendFunc|blendOp|depthFunc|depthClipEnable|depthBias|depthBiasClamp|slopeScaleDepthBias|scissorEnable|stencilOp|stencilFunc|fillMode)\\b",
+                  "match": "\\b(domain|cullMode|blendFunc|blendOp|depthFunc|depthClipEnable|depthBias|depthBiasClamp|slopeScaleDepthBias|scissorEnable|stencilOp|stencilFunc|fillMode|namespace|template)\\b",
                   "name": "keyword"
                 },
                 {
-                  "match": "\\b(texture|filter|addressUV|define|antialiasedLineEnable|maxAnisotropy|mipLODBias|maxLOD|title|zEnable|zWriteEnable|mipLODBias)\\b",
+                  "match": "\\b(texture|filter|addressUV|borderColor|define|antialiasedLineEnable|maxAnisotropy|mipLODBias|maxLOD|title|zEnable|zWriteEnable|mipLODBias|colorWriteMask)\\b",
                   "name": "keyword"
                 },
                 {
-                  "match": "\\b(vertexShader|pixelShader|hullShader|domainShader|computeShader)\\b",
+                  "match": "\\b(vertexShader|pixelShader|hullShader|domainShader|computeShader|geometryShader)\\b",
                   "name": "support.function"
                 },
                 {
@@ -194,11 +194,11 @@
           ]
         },
         {
-          "match": "\\b(globalWater|localWater|terrain|sky|surface|particles)\\b",
+          "match": "\\b(globalWater|localWater|terrain|sky|surface|particles|postprocess)\\b",
           "name": "keyword.other"
         },
         {
-          "match": "\\b(DepthTexture|RenderTarget|UserTexture)\\b",
+          "match": "\\b(DepthTexture|RenderTarget|UserTexture|UAVTexture)\\b",
           "name": "support.type"
         },
         {
@@ -222,7 +222,7 @@
           "name": "constant.numeric.integer"
         },
         {
-          "match": "[A-Za-z_][A-Za-z0-9_]*",
+          "match": "[^\\s.,;:=\\[\\]{}()<>\"'`!@#$%^&*?+/\\\\\\-]+",
           "name": "constant.character.escape"
         },
         {
