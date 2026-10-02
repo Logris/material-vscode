@@ -181,13 +181,227 @@ const completionProvider = vscode.languages.registerCompletionItemProvider(
     }
 );
 
+// ======================= ФОРМАТТЕР =======================
+
+const TAB_SIZE = 4;                 // размер таба в пробелах
+const MIN_VALUE_COLUMN = 16;        // минимальный отступ значений от начала уровня (4 таба)
+const NON_PARAM_KEYWORDS = new Set(['namespace', 'Version', 'template', 'define']);
+
+// Считает фигурные скобки в строке, игнорируя содержимое строк "...",
+// аннотаций <...> и комментариев //, /* */. Обновляет состояние state.
+function scanBraces(line, state) {
+    let leadingClosers = 0;
+    let delta = 0;
+    let countingLeading = true;
+
+    for (let k = 0; k < line.length; k++) {
+        const c = line[k];
+        const d = line[k + 1];
+
+        if (state.block) {
+            if (c === '*' && d === '/') { state.block = false; k++; }
+            continue;
+        }
+        if (state.line) { continue; }
+        if (state.str) {
+            if (c === '\\') { k++; continue; }
+            if (c === '"') { state.str = false; }
+            continue;
+        }
+        if (state.ann) {
+            if (c === '>') { state.ann = false; }
+            continue;
+        }
+
+        if (c === '/' && d === '/') { state.line = true; continue; }
+        if (c === '/' && d === '*') { state.block = true; k++; continue; }
+        if (c === '"') { state.str = true; continue; }
+        if (c === '<') { state.ann = true; continue; }
+        if (/\s/.test(c)) { continue; }
+
+        if (countingLeading) {
+            if (c === '}') { leadingClosers++; }
+            else { countingLeading = false; }
+        }
+        if (c === '{') { delta++; }
+        else if (c === '}') { delta--; }
+    }
+
+    state.line = false; // строчный комментарий заканчивается вместе со строкой
+    state.str = false;  // строки и аннотации в этом формате однострочные
+    state.ann = false;
+
+    return { leadingClosers, delta };
+}
+
+// Возвращает строку табов для уровня вложенности
+function indentFor(level) {
+    return '\t'.repeat(Math.max(0, level));
+}
+
+// Разбивает правую часть параметра на единицы (значения, строки, группы,
+// аннотации, комментарий), сохраняя содержимое групп дословно
+function splitValueUnits(text) {
+    const units = [];
+    const n = text.length;
+    let i = 0;
+
+    while (i < n) {
+        while (i < n && /\s/.test(text[i])) { i++; }
+        if (i >= n) { break; }
+
+        if (text[i] === '/' && (text[i + 1] === '/' || text[i + 1] === '*')) {
+            units.push(text.slice(i).replace(/\s+$/, ''));
+            break;
+        }
+        if (text[i] === '"') {
+            let j = i + 1;
+            while (j < n && text[j] !== '"') { if (text[j] === '\\') { j++; } j++; }
+            units.push(text.slice(i, Math.min(j + 1, n)));
+            i = Math.min(j + 1, n);
+            continue;
+        }
+        if (text[i] === '(') {
+            let depth = 0;
+            let j = i;
+            while (j < n) {
+                if (text[j] === '(') { depth++; }
+                else if (text[j] === ')') { depth--; if (depth === 0) { j++; break; } }
+                j++;
+            }
+            units.push(text.slice(i, j));
+            i = j;
+            continue;
+        }
+        if (text[i] === '<') {
+            let j = i + 1;
+            while (j < n && text[j] !== '>') { j++; }
+            units.push(text.slice(i, Math.min(j + 1, n)));
+            i = Math.min(j + 1, n);
+            continue;
+        }
+
+        let j = i;
+        while (j < n && !/\s/.test(text[j]) && text[j] !== '"' && text[j] !== '(' && text[j] !== '<') {
+            if (text[j] === '/' && text[j + 1] === '/') { break; }
+            j++;
+        }
+        if (j === i) { j++; }
+        units.push(text.slice(i, j));
+        i = j;
+    }
+
+    return units;
+}
+
+// Формирует отступ (табы, затем пробелы), выравнивающий текст в колонку targetCol
+function paddingToColumn(currentCol, targetCol) {
+    if (targetCol <= currentCol) { return ' '; }
+    let col = currentCol;
+    let pad = '';
+    // Следующая позиция таб-стопа от текущей колонки
+    let nextStop = col % TAB_SIZE === 0 ? col + TAB_SIZE : col + (TAB_SIZE - (col % TAB_SIZE));
+    // Пока таб не перескакивает цель - используем табы
+    while (nextStop <= targetCol) {
+        pad += '\t';
+        col = nextStop;
+        nextStop = col % TAB_SIZE === 0 ? col + TAB_SIZE : col + (TAB_SIZE - (col % TAB_SIZE));
+    }
+    // Остаток добиваем пробелами (например, для длинных имён параметров)
+    if (col < targetCol) { pad += ' '.repeat(targetCol - col); }
+    return pad;
+}
+
 function activate(context) {
     console.log('MyFormat extension active');
-    context.subscriptions.push(completionProvider);
+    context.subscriptions.push(completionProvider, formattingProvider);
 }
+
+const PARAM_LINE_RE = /^([A-Za-z_][A-Za-z0-9_]*(?:\[\d+\])?)(\s+)(\S[\s\S]*)$/;
+
+// Определяет, является ли строка параметром, значения которого нужно выравнивать
+function isParamLine(content) {
+    if (/^[{(<]/.test(content)) { return false; }
+    if (/^\/[/*]/.test(content)) { return false; }
+    const m = content.match(PARAM_LINE_RE);
+    if (!m) { return false; }
+    if (NON_PARAM_KEYWORDS.has(m[1])) { return false; }
+    if (m[3][0] === '<') { return false; } // аннотация перед значением - не трогаем
+    return true;
+}
+
+// Выравнивает строку параметра по колонкам
+function formatParamLine(content, level) {
+    const m = content.match(PARAM_LINE_RE);
+    const name = m[1];
+    const units = splitValueUnits(m[3]);
+
+    const baseIndentCol = level * TAB_SIZE;
+    const nameEndCol = baseIndentCol + name.length;
+    const targetCol = Math.max(baseIndentCol + MIN_VALUE_COLUMN, nameEndCol + 1);
+
+    return indentFor(level) + name + paddingToColumn(nameEndCol, targetCol) + units.join(' ');
+}
+
+// Полное форматирование текста документа
+function formatText(text, eol) {
+    const eolChar = eol === '\r\n' ? '\r\n' : '\n';
+    const lines = text.split(/\r\n|\r|\n/);
+    const out = [];
+    const state = { str: false, ann: false, line: false, block: false };
+    let depth = 0;
+
+    for (let i = 0; i < lines.length; i++) {
+        const raw = lines[i];
+        const blockAtStart = state.block;
+        const braces = scanBraces(raw, state);
+
+        if (blockAtStart) {
+            // строку внутри блочного комментария не переформатируем
+            out.push(raw.replace(/\s+$/, ''));
+            depth += braces.delta;
+            continue;
+        }
+
+        const content = raw.replace(/^\s+/, '').replace(/\s+$/, '');
+
+        if (content === '') {
+            out.push('');
+            depth += braces.delta;
+            continue;
+        }
+
+        let level = depth - braces.leadingClosers;
+        if (level < 0) { level = 0; }
+
+        out.push(isParamLine(content) ? formatParamLine(content, level) : indentFor(level) + content);
+        depth += braces.delta;
+    }
+
+    return out.join(eolChar);
+}
+
+// Формирует правки форматирования для документа
+function formatDocument(document) {
+    const eol = document.eol === vscode.EndOfLine.CRLF ? '\r\n' : '\n';
+    const original = document.getText();
+    const formatted = formatText(original, eol);
+    if (formatted === original) { return []; }
+    const fullRange = new vscode.Range(document.positionAt(0), document.positionAt(original.length));
+    return [vscode.TextEdit.replace(fullRange, formatted)];
+}
+
+const formattingProvider = vscode.languages.registerDocumentFormattingEditProvider(
+    [{ language: 'miracle' }, { pattern: '**/*.mat' }, { pattern: '**/*.template' }, { pattern: '**/*.fx' }],
+    {
+        provideDocumentFormattingEdits(document) {
+            return formatDocument(document);
+        }
+    }
+);
 
 function deactivate() {
     console.log('MyFormat extension deactivated');
 }
 
-module.exports = { activate, deactivate };
+module.exports = { activate, deactivate, formatText, formatDocument };

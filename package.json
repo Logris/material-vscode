@@ -2,11 +2,11 @@
   "name": "miracle-syntax",
   "main": "./extension.js",
   "activationEvents": [
-    "onLanguage:template"
+    "onLanguage:miracle"
   ],
   "displayName": "Miracle Engine Material Syntax",
   "description": "Syntax highlighting for Miracle Material / template files",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "publisher": "MiracleEngine",
   "repository": {
     "type": "git",

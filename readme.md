@@ -22,3 +22,18 @@ Shows syntax highlighting for a complete material file:
    - `domain` - Set domain type
    - `shader` - Add shader reference
    - `block` - Create a new block
+4. Format the document with `Shift+Alt+F` (or **Format Document**)
+
+## Formatting
+
+The extension registers a document formatter for Miracle material files (`.mat`, `.template`, `.fx`).
+Press `Shift+Alt+F` (or run **Format Document** from the Command Palette) to format the current file.
+
+The formatter:
+
+- normalizes indentation to tabs according to `{ }` nesting;
+- aligns parameter values into columns (values start 4 tabs from the block indentation);
+- keeps annotations `<...>` and comments (`//`, `/* */`) untouched;
+- removes trailing whitespace and indentation on blank lines.
+
+Formatting is idempotent - running it twice produces the same result.
