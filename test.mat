@@ -1,0 +1,57 @@
+namespace TestNamespace
+{
+	(block)
+	{
+		zEnable  		<Desc=(Jgbcfybt), Value=0.3, Visibility=Visible> true  Description<Description Parameter> Max<12> "Ghedtqm Прувейт" Min<0> Step<0.1> "Hahaja Ghbdtnt" <Type=ComputeShader, Tag=Example, Core=cs_5_0, EntryPoint=MainCS, Hidden, Size=(12 12 2), Haha> <Other=0.001, Option21=0.21, Visibility=Hidden>
+
+		(ambient)
+		{
+			zEnable			true
+			zWriteEnable	false
+
+			zEnable			true
+			zWriteEnable	false
+
+			blendFunc		srcAlpha invSrcAlpha
+
+			texture[0]		"sdklsdkfsdkf lname.dds" <Type=Cubemap, Desc=(ksd ;lsdksd)>
+			texture[1]		UserTexture[0]
+			texture[2]		UserTexture[1]
+
+			vertexShader	vs_main ./Shaders/vertexShader.hlsl
+			pixelShader		ps_main ./Shaders/pixelShader.hlsl
+			computeShader	cs_main ./Shaders/computeShader.hlsl
+		}
+	}
+
+	Version 1.0
+
+	(BlockName) <Type=ComputeShader, Tag=Example, Core=cs_5_0, EntryPoint=MainCS, Hidden, Size=(12 12 2), Haha>
+	{
+		ParamName		(with witheapce) value1 value2 .... valuen <Description=DescriptionText, Range=({12 12 2.2 2}), DisplayName="Display Text", Option, Visible, ...> // () "" - объединяются в одно значение
+		ParamName2		value21 value22 .... value2n
+
+		texture[1]		UserTexture[0]
+		texture[0]		"/Core/DefaultTexture fdghfglkj.dds" <Type=Cubemap, Description="DescriptionText", DisplayName="Display Text"> // "" - объединяются в одно значение
+
+		/* многострочные
+		комментарии */
+
+		(ChildBlockName1) {
+
+			difuseColor		1 1 1 1
+			tcScale			1 1
+			fogDensity		0.5
+			ambientOcclusion 1
+			metalnessFactor	1.5
+			roughnessFactor	1.3
+
+			blendFunc		srcColor destColor
+
+			texture[0]		"/Core/DefaultTexture fdghfglkj sd;lksd.dds" <Type=Cubemap, Description="DescriptionText", DisplayName=(Display Text)> // комментарий (аттрибуты можно писать в одну строку с параметром)
+
+			ParamName		value1 value2 .... valuen
+			ParamName2		value1 value2 .... valuen
+		}
+	}
+}

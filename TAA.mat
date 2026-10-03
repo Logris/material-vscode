@@ -1,0 +1,64 @@
+namespace taa
+{
+	(mat_taa) {
+		(ambient) {
+			domain			postprocess
+
+			texture[0]		RenderTarget[0]
+			texture[1]		DepthTexture[0]
+			texture[2]		RenderTarget[1]
+			texture[3]		RenderTarget[2]
+
+			texture[4]		UAVTexture[0]
+
+			filter[0]		point
+			filter[1]		point
+			filter[2]		point
+			filter[3]		point
+
+			computeShader	main ./TAA/TAA.hlsl
+		}
+
+		(user0) {
+			texture[0]		RenderTarget[0]
+			texture[1]		DepthTexture[0]
+			texture[2]		RenderTarget[1]
+			texture[3]		RenderTarget[2]
+
+			texture[4]		UAVTexture[0]
+
+			filter[0]		point
+			filter[1]		point
+			filter[2]		point
+			filter[3]		point
+
+			computeShader	first ./TAA/TAA.hlsl
+		}
+	}
+
+	(mat_sharpen) {
+
+		(ambient) {
+			domain			postprocess
+
+			texture[0]		RenderTarget[0]
+			filter[0]		point
+
+			texture[1]		UAVTexture[0]
+			texture[2]		UAVTexture[1]
+
+			computeShader	main ./TAA/TAASharpener.hlsl
+		}
+
+		(user0) {
+			texture[0]		RenderTarget[0]
+
+			filter[0]		point
+
+			texture[1212212121]	UAVTexture[0]
+			texture[2]		UAVTexture[1]
+
+			computeShader	post ./TAA/TAASharpener.hlsl
+		}
+	}
+}
