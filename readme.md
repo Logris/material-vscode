@@ -32,8 +32,19 @@ Press `Shift+Alt+F` (or run **Format Document** from the Command Palette) to for
 The formatter:
 
 - normalizes indentation to tabs according to `{ }` nesting;
-- aligns parameter values into columns (values start 4 tabs from the block indentation);
-- keeps annotations `<...>` and comments (`//`, `/* */`) untouched;
-- removes trailing whitespace and indentation on blank lines.
+- removes trailing whitespace and indentation on blank lines;
+- keeps annotations `<...>` and comments (`//`, `/* */`) untouched.
 
 Formatting is idempotent - running it twice produces the same result.
+
+### Value alignment
+
+Parameter values are aligned into a column. The mode is controlled by the
+`miracle.formatting.alignment` setting:
+
+- `block` (default) - every parameter in a block is aligned to the column of the **longest
+  parameter name inside that block**;
+- `line` - each parameter is aligned independently.
+
+In both modes the column is at least 4 tabs from the block indentation, and padding uses tabs
+plus spaces when a single tab is not enough to reach the column.

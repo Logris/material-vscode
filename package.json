@@ -6,7 +6,7 @@
   ],
   "displayName": "Miracle Engine Material Syntax",
   "description": "Syntax highlighting for Miracle Material / template files",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "publisher": "MiracleEngine",
   "repository": {
     "type": "git",
@@ -51,6 +51,24 @@
         "scopeName": "source.miracle",
         "path": "./syntaxes/material-language.json"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Miracle Material",
+      "properties": {
+        "miracle.formatting.alignment": {
+          "type": "string",
+          "enum": [
+            "block",
+            "line"
+          ],
+          "enumDescriptions": [
+            "Выравнивать значения по самому длинному имени параметра в блоке",
+            "Выравнивать значения по каждому параметру отдельно"
+          ],
+          "default": "block",
+          "markdownDescription": "Режим выравнивания значений параметров при форматировании Miracle material файлов (`.mat`, `.template`, `.fx`)."
+        }
+      }
+    }
   }
 }

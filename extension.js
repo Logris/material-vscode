@@ -187,6 +187,11 @@ const TAB_SIZE = 4;                 // размер таба в пробелах
 const MIN_VALUE_COLUMN = 16;        // минимальный отступ значений от начала уровня (4 таба)
 const NON_PARAM_KEYWORDS = new Set(['namespace', 'Version', 'template', 'define']);
 
+// Режимы выравнивания значений (настройка miracle.formatting.alignment)
+const ALIGNMENT_BLOCK = 'block';    // по самому длинному имени в блоке
+const ALIGNMENT_LINE = 'line';      // по каждому параметру отдельно
+const ALIGNMENT_DEFAULT = ALIGNMENT_BLOCK;
+
 // Считает фигурные скобки в строке, игнорируя содержимое строк "...",
 // аннотаций <...> и комментариев //, /* */. Обновляет состояние state.
 function scanBraces(line, state) {
@@ -319,36 +324,26 @@ function activate(context) {
 
 const PARAM_LINE_RE = /^([A-Za-z_][A-Za-z0-9_]*(?:\[\d+\])?)(\s+)(\S[\s\S]*)$/;
 
-// Определяет, является ли строка параметром, значения которого нужно выравнивать
-function isParamLine(content) {
-    if (/^[{(<]/.test(content)) { return false; }
-    if (/^\/[/*]/.test(content)) { return false; }
+// Разбирает строку как параметр (имя + правая часть) либо возвращает null
+function parseParamLine(content) {
+    if (/^[{(<]/.test(content)) { return null; }
+    if (/^\/[/*]/.test(content)) { return null; }
     const m = content.match(PARAM_LINE_RE);
-    if (!m) { return false; }
-    if (NON_PARAM_KEYWORDS.has(m[1])) { return false; }
-    if (m[3][0] === '<') { return false; } // аннотация перед значением - не трогаем
-    return true;
+    if (!m) { return null; }
+    if (NON_PARAM_KEYWORDS.has(m[1])) { return null; }
+    if (m[3][0] === '<') { return null; } // аннотация перед значением - не трогаем
+    return { name: m[1], rest: m[3] };
 }
 
-// Выравнивает строку параметра по колонкам
-function formatParamLine(content, level) {
-    const m = content.match(PARAM_LINE_RE);
-    const name = m[1];
-    const units = splitValueUnits(m[3]);
-
-    const baseIndentCol = level * TAB_SIZE;
-    const nameEndCol = baseIndentCol + name.length;
-    const targetCol = Math.max(baseIndentCol + MIN_VALUE_COLUMN, nameEndCol + 1);
-
-    return indentFor(level) + name + paddingToColumn(nameEndCol, targetCol) + units.join(' ');
-}
-
-// Полное форматирование текста документа
-function formatText(text, eol) {
-    const eolChar = eol === '\r\n' ? '\r\n' : '\n';
+// Первый проход: разбирает документ на строки и считает максимальную длину
+// имени параметра в каждом блоке (для режима выравнивания по блоку)
+function analyzeDocument(text) {
     const lines = text.split(/\r\n|\r|\n/);
-    const out = [];
     const state = { str: false, ann: false, line: false, block: false };
+    const parsed = [];
+    const blockMaxName = new Map();
+    const blockStack = [0];
+    let blockCounter = 0;
     let depth = 0;
 
     for (let i = 0; i < lines.length; i++) {
@@ -356,36 +351,94 @@ function formatText(text, eol) {
         const blockAtStart = state.block;
         const braces = scanBraces(raw, state);
 
-        if (blockAtStart) {
-            // строку внутри блочного комментария не переформатируем
-            out.push(raw.replace(/\s+$/, ''));
-            depth += braces.delta;
-            continue;
-        }
-
-        const content = raw.replace(/^\s+/, '').replace(/\s+$/, '');
-
-        if (content === '') {
-            out.push('');
-            depth += braces.delta;
-            continue;
-        }
-
         let level = depth - braces.leadingClosers;
         if (level < 0) { level = 0; }
 
-        out.push(isParamLine(content) ? formatParamLine(content, level) : indentFor(level) + content);
+        const item = {
+            kind: blockAtStart ? 'blockcomment' : 'blank',
+            trimmed: raw.replace(/\s+$/, ''),
+            content: '',
+            level,
+            name: '',
+            rest: '',
+            blockId: blockStack[blockStack.length - 1]
+        };
+
+        if (!blockAtStart) {
+            const content = item.trimmed.replace(/^\s+/, '');
+            if (content !== '') {
+                item.content = content;
+                const param = parseParamLine(content);
+                if (param) {
+                    item.kind = 'param';
+                    item.name = param.name;
+                    item.rest = param.rest;
+                    const currentMax = blockMaxName.get(item.blockId) || 0;
+                    if (item.name.length > currentMax) {
+                        blockMaxName.set(item.blockId, item.name.length);
+                    }
+                } else {
+                    item.kind = 'code';
+                }
+            }
+        }
+
+        parsed.push(item);
+
+        for (let k = 0; k < braces.delta; k++) {
+            blockCounter++;
+            blockStack.push(blockCounter);
+        }
+        for (let k = 0; k > braces.delta; k--) {
+            if (blockStack.length > 1) { blockStack.pop(); }
+        }
+
         depth += braces.delta;
     }
 
-    return out.join(eolChar);
+    return { parsed, blockMaxName };
+}
+
+// Второй проход: формирует строку вывода с учётом режима выравнивания
+function renderLine(item, mode, blockMaxName) {
+    if (item.kind === 'blockcomment') { return item.trimmed; }
+    if (item.kind === 'blank') { return ''; }
+
+    if (item.kind === 'param') {
+        const indentCol = item.level * TAB_SIZE;
+        const nameEndCol = indentCol + item.name.length;
+
+        let targetCol;
+        if (mode === ALIGNMENT_BLOCK) {
+            const maxLen = blockMaxName.get(item.blockId) || item.name.length;
+            targetCol = indentCol + Math.max(MIN_VALUE_COLUMN, maxLen + 1);
+        } else {
+            targetCol = Math.max(indentCol + MIN_VALUE_COLUMN, nameEndCol + 1);
+        }
+
+        const units = splitValueUnits(item.rest);
+        return indentFor(item.level) + item.name + paddingToColumn(nameEndCol, targetCol) + units.join(' ');
+    }
+
+    return indentFor(item.level) + item.content;
+}
+
+// Полное форматирование текста документа
+function formatText(text, eol, mode) {
+    const eolChar = eol === '\r\n' ? '\r\n' : '\n';
+    const alignment = mode === ALIGNMENT_LINE ? ALIGNMENT_LINE : ALIGNMENT_BLOCK;
+    const { parsed, blockMaxName } = analyzeDocument(text);
+    return parsed.map(item => renderLine(item, alignment, blockMaxName)).join(eolChar);
 }
 
 // Формирует правки форматирования для документа
 function formatDocument(document) {
     const eol = document.eol === vscode.EndOfLine.CRLF ? '\r\n' : '\n';
+    const mode = vscode.workspace
+        .getConfiguration('miracle.formatting')
+        .get('alignment', ALIGNMENT_DEFAULT);
     const original = document.getText();
-    const formatted = formatText(original, eol);
+    const formatted = formatText(original, eol, mode);
     if (formatted === original) { return []; }
     const fullRange = new vscode.Range(document.positionAt(0), document.positionAt(original.length));
     return [vscode.TextEdit.replace(fullRange, formatted)];
