@@ -361,6 +361,7 @@ function analyzeDocument(text) {
             level,
             name: '',
             rest: '',
+            simple: false,
             blockId: blockStack[blockStack.length - 1]
         };
 
@@ -373,9 +374,14 @@ function analyzeDocument(text) {
                     item.kind = 'param';
                     item.name = param.name;
                     item.rest = param.rest;
-                    const currentMax = blockMaxName.get(item.blockId) || 0;
-                    if (item.name.length > currentMax) {
-                        blockMaxName.set(item.blockId, item.name.length);
+                    // «Простой» параметр - значение без фигурных скобок.
+                    // В расчёте колонки блока участвуют только простые параметры.
+                    item.simple = !/[{}]/.test(param.rest);
+                    if (item.simple) {
+                        const currentMax = blockMaxName.get(item.blockId) || 0;
+                        if (item.name.length > currentMax) {
+                            blockMaxName.set(item.blockId, item.name.length);
+                        }
                     }
                 } else {
                     item.kind = 'code';
@@ -409,10 +415,12 @@ function renderLine(item, mode, blockMaxName) {
         const nameEndCol = indentCol + item.name.length;
 
         let targetCol;
-        if (mode === ALIGNMENT_BLOCK) {
+        if (mode === ALIGNMENT_BLOCK && item.simple) {
+            // Простые параметры выравниваются по самому длинному имени в блоке
             const maxLen = blockMaxName.get(item.blockId) || item.name.length;
             targetCol = indentCol + Math.max(MIN_VALUE_COLUMN, maxLen + 1);
         } else {
+            // Сложные параметры (значение содержит {}) и режим line - по правилу line
             targetCol = Math.max(indentCol + MIN_VALUE_COLUMN, nameEndCol + 1);
         }
 

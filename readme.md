@@ -42,8 +42,9 @@ Formatting is idempotent - running it twice produces the same result.
 Parameter values are aligned into a column. The mode is controlled by the
 `miracle.formatting.alignment` setting:
 
-- `block` (default) - every parameter in a block is aligned to the column of the **longest
-  parameter name inside that block**;
+- `block` (default) - simple parameters (value without `{ }`) are aligned to the column of the
+  **longest simple parameter name inside the block**; parameters whose value contains `{ }` are
+  excluded from the block column and aligned individually (same as `line`);
 - `line` - each parameter is aligned independently.
 
 In both modes the column is at least 4 tabs from the block indentation, and padding uses tabs

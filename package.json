@@ -6,7 +6,7 @@
   ],
   "displayName": "Miracle Engine Material Syntax",
   "description": "Syntax highlighting for Miracle Material / template files",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "publisher": "MiracleEngine",
   "repository": {
     "type": "git",
